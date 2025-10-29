@@ -8,7 +8,7 @@ class MainScaffold extends StatelessWidget {
   const MainScaffold({required this.child, required this.path, super.key});
 
   int getIndexFromPath(String path) {
-    if (path.startsWith('/settings')) {
+    if (path.startsWith('/favorites')) {
       return 1;
     }
     return 0;
@@ -18,45 +18,32 @@ class MainScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentIndex = getIndexFromPath(path);
 
-    String getTitleByPath(String path) {
-      if (path.startsWith('/settings')) {
-        return 'Settings';
-      } else {
-        return 'Home';
-      }
-    }
-
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        leading:
-            path.contains('/details') ||
-                path.contains('/addRecipe') ||
-                path.contains('/groceryList')
-            ? BackButton(onPressed: () => context.pop())
-            : null,
-        title: Row(
-          children: [
-            Text(getTitleByPath(path)),
-            Spacer(),
-            IconButton(
-              onPressed: () {
-                context.pushNamed('groceryList');
-              },
-              icon: Icon(Icons.shopping_cart),
+      backgroundColor: Colors.white,
+      appBar: path.startsWith('/settings')
+          ? null
+          : AppBar(
+              backgroundColor: Colors.red,
+              elevation: 0,
+              title: Text(
+                'FoodSwipe',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+              centerTitle: true,
+              leading: IconButton(
+                icon: Icon(Icons.settings, color: Colors.white),
+                onPressed: () {
+                  context.goNamed("settings");
+                },
+              ),
             ),
-          ],
-        ),
-      ),
       body: child,
-      floatingActionButton: path == '/home'
-          ? FloatingActionButton(
-              onPressed: () {
-                context.pushNamed('addRecipe');
-              },
-              child: Icon(Icons.add, color: Colors.black87),
-            )
-          : null,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
@@ -65,15 +52,15 @@ class MainScaffold extends StatelessWidget {
               context.goNamed('home');
               break;
             case 1:
-              context.goNamed('settings');
+              context.goNamed('favorites');
               break;
           }
         },
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
+            icon: Icon(Icons.favorite),
+            label: 'Favorites',
           ),
         ],
       ),
