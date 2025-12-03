@@ -20,16 +20,12 @@ class MainScaffold extends StatelessWidget {
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white,
       appBar: path.startsWith('/settings')
           ? null
           : AppBar(
-              backgroundColor: Colors.red,
-              elevation: 0,
               title: Text(
                 'FoodSwipe',
                 style: TextStyle(
-                  color: Colors.white,
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
@@ -37,7 +33,7 @@ class MainScaffold extends StatelessWidget {
               ),
               centerTitle: true,
               leading: IconButton(
-                icon: Icon(Icons.settings, color: Colors.white),
+                icon: Icon(Icons.settings),
                 onPressed: () {
                   context.goNamed("settings");
                 },

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foodswipe/models/restaurant.dart';
 import 'package:foodswipe/providers/restaurant_provider.dart';
+import 'package:foodswipe/providers/settings_provider.dart';
+import 'package:foodswipe/providers/theme_provider.dart';
 import 'package:foodswipe/screens/favorites_screen.dart';
 import 'package:foodswipe/screens/login_screen.dart';
 import 'package:foodswipe/screens/restaurant_details_screen.dart';
@@ -74,31 +76,82 @@ class MainApp extends StatelessWidget {
       ],
     );
 
-    return ChangeNotifierProvider(
-      create: (context) => RestaurantProvider(),
-      child: MaterialApp.router(
-        routerConfig: router,
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          primaryColor: Colors.red,
-          scaffoldBackgroundColor: Colors.white,
-          colorScheme: ColorScheme.light(
-            primary: Colors.red,
-            secondary: Color(0xFF4ECDC4),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SettingsProvider()),
+        ChangeNotifierProvider(create: (context) => ThemeProvider()),
+        ChangeNotifierProxyProvider<SettingsProvider, RestaurantProvider>(
+          create: (context) => RestaurantProvider(
+            settingsProvider: context.read<SettingsProvider>(),
           ),
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            elevation: 0,
-            centerTitle: true,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
-            ),
-          ),
+          update: (context, settingsProvider, restaurantProvider) =>
+              restaurantProvider ?? RestaurantProvider(settingsProvider: settingsProvider),
         ),
+      ],
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          return MaterialApp.router(
+            routerConfig: router,
+            debugShowCheckedModeBanner: false,
+            themeMode: themeProvider.themeMode,
+            theme: ThemeData(
+              brightness: Brightness.light,
+              primaryColor: Colors.red,
+              scaffoldBackgroundColor: Colors.white,
+              colorScheme: ColorScheme.light(
+                primary: Colors.red,
+                secondary: Color(0xFF4ECDC4),
+              ),
+              appBarTheme: AppBarTheme(
+                backgroundColor: Colors.red,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                centerTitle: true,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              cardTheme: CardThemeData(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+            darkTheme: ThemeData(
+              brightness: Brightness.dark,
+              primaryColor: Colors.red,
+              scaffoldBackgroundColor: Color(0xFF121212),
+              colorScheme: ColorScheme.dark(
+                primary: Colors.red,
+                secondary: Color(0xFF4ECDC4),
+                surface: Color(0xFF1E1E1E),
+              ),
+              appBarTheme: AppBarTheme(
+                backgroundColor: Color(0xFF1E1E1E),
+                foregroundColor: Colors.white,
+                elevation: 0,
+                centerTitle: true,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+              cardTheme: CardThemeData(
+                color: Color(0xFF1E1E1E),
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

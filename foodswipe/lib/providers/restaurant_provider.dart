@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/restaurant.dart';
 import '../services/google_places_api_key.dart';
+import 'settings_provider.dart';
 
 class RestaurantProvider extends ChangeNotifier {
   final GooglePlacesService _placesService = GooglePlacesService();
+  final SettingsProvider settingsProvider;
 
   List<Restaurant> _allRestaurants = [];
   List<Restaurant> _availableRestaurants = [];
@@ -13,6 +15,23 @@ class RestaurantProvider extends ChangeNotifier {
   String? _error;
   bool _hasLoadedOnce = false;
   int _currentSwipeIndex = 0;
+
+  RestaurantProvider({required this.settingsProvider}) {
+    // Listen to settings changes and reload restaurants
+    settingsProvider.addListener(_onSettingsChanged);
+  }
+
+  void _onSettingsChanged() {
+    // When settings change, reload restaurants with new filters
+    print('Settings changed, reloading restaurants...');
+    refreshRestaurants();
+  }
+
+  @override
+  void dispose() {
+    settingsProvider.removeListener(_onSettingsChanged);
+    super.dispose();
+  }
 
   List<Restaurant> get availableRestaurants => _availableRestaurants;
   List<Restaurant> get likedRestaurants => _likedRestaurants;
@@ -40,7 +59,9 @@ class RestaurantProvider extends ChangeNotifier {
       final restaurants = await _placesService.searchNearbyRestaurants(
         latitude: position.latitude,
         longitude: position.longitude,
-        radius: 5000,
+        radius: settingsProvider.searchRadius,
+        minPrice: settingsProvider.minPrice,
+        maxPrice: settingsProvider.maxPrice,
       );
 
       print('Loaded ${restaurants.length} restaurants from API');
@@ -49,6 +70,7 @@ class RestaurantProvider extends ChangeNotifier {
 
       _availableRestaurants = _allRestaurants
           .where((r) => !_likedRestaurants.any((liked) => liked.id == r.id))
+          .where((r) => _matchesCuisineFilter(r))
           .toList();
 
       _hasLoadedOnce = true;
@@ -127,6 +149,21 @@ class RestaurantProvider extends ChangeNotifier {
   }
 
   int get totalCount => _allRestaurants.length;
+
+  bool _matchesCuisineFilter(Restaurant restaurant) {
+    // If no cuisines selected, show all restaurants
+    if (settingsProvider.selectedCuisines.isEmpty) {
+      return true;
+    }
+
+    // Check if restaurant's cuisine type matches any selected cuisine
+    final restaurantCuisine = restaurant.cuisineType.toLowerCase();
+
+    return settingsProvider.selectedCuisines.any((selectedCuisine) {
+      return restaurantCuisine.contains(selectedCuisine.toLowerCase()) ||
+             selectedCuisine.toLowerCase().contains(restaurantCuisine);
+    });
+  }
 
   Future<Position> _determinePosition() async {
     bool serviceEnabled;
