@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/restaurant_provider.dart';
 import '../models/restaurant.dart';
@@ -75,7 +76,11 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
         onTap: () {
-          // TODO: Navigate to restaurant details
+          context.pushNamed(
+            'restaurant-details',
+            pathParameters: {'id': restaurant.id},
+            extra: restaurant,
+          );
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

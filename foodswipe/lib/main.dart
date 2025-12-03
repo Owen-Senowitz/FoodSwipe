@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:foodswipe/models/restaurant.dart';
 import 'package:foodswipe/providers/restaurant_provider.dart';
 import 'package:foodswipe/screens/favorites_screen.dart';
 import 'package:foodswipe/screens/login_screen.dart';
+import 'package:foodswipe/screens/restaurant_details_screen.dart';
 import 'package:foodswipe/screens/settings_screen.dart';
 import 'package:foodswipe/screens/swipe_screen.dart';
 import 'package:foodswipe/widgets/login_scaffold.dart';
@@ -60,6 +62,14 @@ class MainApp extends StatelessWidget {
               builder: (context, state) => FavoritesScreen(),
             ),
           ],
+        ),
+        GoRoute(
+          name: 'restaurant-details',
+          path: '/restaurant/:id',
+          builder: (context, state) {
+            final restaurant = state.extra as Restaurant;
+            return RestaurantDetailsScreen(restaurant: restaurant);
+          },
         ),
       ],
     );
