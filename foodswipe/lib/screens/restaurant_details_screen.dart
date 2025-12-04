@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/restaurant.dart';
+import '../providers/auth_provider.dart';
 import '../providers/restaurant_provider.dart';
+import '../widgets/match_display.dart';
 
 class RestaurantDetailsScreen extends StatelessWidget {
   final Restaurant restaurant;
@@ -21,6 +23,18 @@ class RestaurantDetailsScreen extends StatelessWidget {
               children: [
                 _buildHeader(context),
                 _buildInfoSection(context),
+                // Show matches section
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, child) {
+                    if (authProvider.currentUserId == null) {
+                      return SizedBox.shrink();
+                    }
+                    return MatchDisplay(
+                      restaurant: restaurant,
+                      currentUserId: authProvider.currentUserId!,
+                    );
+                  },
+                ),
                 SizedBox(height: 32),
               ],
             ),

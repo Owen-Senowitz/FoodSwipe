@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:foodswipe/models/restaurant.dart';
+import 'package:foodswipe/providers/auth_provider.dart';
 import 'package:foodswipe/providers/restaurant_provider.dart';
 import 'package:foodswipe/providers/settings_provider.dart';
 import 'package:foodswipe/providers/theme_provider.dart';
@@ -78,6 +79,7 @@ class MainApp extends StatelessWidget {
 
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
         ChangeNotifierProvider(create: (context) => SettingsProvider()),
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProxyProvider<SettingsProvider, RestaurantProvider>(

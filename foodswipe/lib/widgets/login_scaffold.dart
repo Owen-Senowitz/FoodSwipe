@@ -8,6 +8,6 @@ class LoginScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(resizeToAvoidBottomInset: false, body: child);
+    return Scaffold(resizeToAvoidBottomInset: true, body: child);
   }
 }
