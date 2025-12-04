@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/settings_provider.dart';
 
@@ -67,6 +69,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
               title: 'App Version',
               subtitle: '1.0.0',
               onTap: null,
+            ),
+            SizedBox(height: 24),
+            _buildSectionHeader('Account'),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _handleLogout(context),
+                icon: Icon(Icons.logout),
+                label: Text('Logout'),
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 16),
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                ),
+              ),
             ),
           ],
         );
@@ -378,5 +395,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         },
       ),
     );
+  }
+
+  void _handleLogout(BuildContext context) {
+    final authProvider = context.read<AuthProvider>();
+    authProvider.logout();
+    context.go('/login');
   }
 }
